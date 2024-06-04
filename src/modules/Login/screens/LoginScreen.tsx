@@ -40,7 +40,7 @@ export const LoginScreen = () => {
                 {typeModal === 'errorLogin' && <WarningErrorLoginAlert setModalVisible={showModal} />}
             </Modal>
             <View style={styles.container}>
-                <Text style={styles.title}>MatchUAA</Text>
+                <Text style={styles.title}>SoundSoulmates</Text>
                 <Image
                     source={require('../../../assets/LogoBanner.png')}
                     style={styles.image}
