@@ -6,6 +6,7 @@ import { StatusBar } from 'react-native';
 import { TabsHome } from './Tabs/TabsHome';
 import { theme } from '../theme/theme';
 import { useContext, useEffect, useState } from 'react';
+import { CategoriesStackNavigation } from './Categories/CategoriesStackNavigation';
 
 export const RootStackNavigation = (props: any) => {
     const { status } = useContext(AuthContext);
@@ -29,7 +30,7 @@ export const RootStackNavigation = (props: any) => {
                 <LoginStackNavigation /> :
                 <>
                     <StatusBar backgroundColor={theme.colors.primary} />
-                    <TabsHome />
+                    <CategoriesStackNavigation />
                 </>
             }
         </NavigationContainer>
