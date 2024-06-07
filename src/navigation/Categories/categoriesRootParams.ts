@@ -1,5 +1,6 @@
 export type CategoriesRootParamas = {
     MovieScreen: {},
     MusicScreen: {},
-    Seriescreen: {},
+    SeriesScreen: {},
+    MatchScreen: {},
 }

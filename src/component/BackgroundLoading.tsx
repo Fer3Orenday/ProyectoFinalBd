@@ -10,7 +10,7 @@ export const BackgroundLoading = () => {
                     source={require('../assets/LogoBanner.png')}
                     style={styles.image}
                 />
-                <ActivityIndicator size={'large'} color={theme.colors.primary} />
+                <ActivityIndicator style={{ marginTop: 20 }} size={'large'} color={theme.colors.primary} />
             </View>
         </View>
     );

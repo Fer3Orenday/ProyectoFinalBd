@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity, Button } from 'react-native';
-import { theme } from '../../theme/theme';
+import { SafeAreaView, View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity, Button, TextInput } from 'react-native';
+import { colors, theme } from '../../theme/theme';
 import { StackScreenProps } from '@react-navigation/stack';
 import { CategoriesRootParamas } from '../../navigation/Categories/categoriesRootParams';
+import { CommonActions } from '@react-navigation/native';
+import { Background } from '../../component/Background';
 
 interface Item {
     id: string;
@@ -40,8 +42,10 @@ const series: Item[] = [
 
 interface Props extends StackScreenProps<CategoriesRootParamas, any> { };
 
-export const SeriesScreen = ({ navigation, route }: Props) => {
+export const SeriesScreen = ({ navigation }: Props) => {
     const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [filteredSeries, setFilteredSeries] = useState<Item[]>(series);
 
     const handleSelectItem = (item: Item) => {
         if (selectedItemIds.includes(item.id)) {
@@ -52,8 +56,21 @@ export const SeriesScreen = ({ navigation, route }: Props) => {
     };
 
     const handleOnNavigate = () => {
-        navigation.navigate('MusicScreen', {});
-    }
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [
+                    { name: 'MatchScreen' },
+                ],
+            })
+        );
+    };
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        const results = series.filter(serie => serie.title.toLowerCase().includes(query.toLowerCase()));
+        setFilteredSeries(results);
+    };
 
     const renderItem = ({ item }: { item: Item }) => {
         const isSelected = selectedItemIds.includes(item.id);
@@ -70,15 +87,22 @@ export const SeriesScreen = ({ navigation, route }: Props) => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Background />
             <Text style={{ color: theme.colors.primary, fontSize: 20, fontWeight: '700', textAlign: 'center' }}>Selecciona tus series favoritas</Text>
+            <TextInput
+                style={styles.searchInput}
+                placeholder="Buscar serie"
+                value={searchQuery}
+                onChangeText={handleSearch}
+            />
             <FlatList
-                data={series}
+                data={filteredSeries}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
                 horizontal
                 contentContainerStyle={styles.list}
             />
-            <Button title='Listo' onPress={handleOnNavigate} />
+            <Button title='Listo' color={colors.secondaryPurple} onPress={handleOnNavigate} />
         </SafeAreaView>
     );
 };
@@ -118,5 +142,19 @@ const styles = StyleSheet.create({
     category: {
         fontSize: 14,
         color: '#666'
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        margin: 10
+    },
+    searchInput: {
+        height: 40,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 5,
+        marginVertical: 10,
+        marginHorizontal: 20,
+        paddingLeft: 10
     }
 });

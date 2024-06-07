@@ -21,10 +21,10 @@ const styles = StyleSheet.create({
         width: 504,
     },
     blueCircle: {
-        backgroundColor: colors.secondaryPurple,
+        backgroundColor: colors.whiteBrown,
     },
     blueBorderCircle: {
-        borderColor: colors.secondaryPurple,
+        borderColor: colors.whiteBrown,
     },
     circle: {
         height: 281,

@@ -1,4 +1,4 @@
-const LOGIN_EMAIL = '/Auth/login';
+const LOGIN_EMAIL = '';
 
 export {
     LOGIN_EMAIL,

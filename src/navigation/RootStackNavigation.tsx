@@ -1,12 +1,11 @@
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { BackgroundLoading } from '../component/BackgroundLoading';
+import { CategoriesStackNavigation } from './Categories/CategoriesStackNavigation';
 import { LoginStackNavigation } from './Login/LoginStackNavigation';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
-import { TabsHome } from './Tabs/TabsHome';
 import { theme } from '../theme/theme';
 import { useContext, useEffect, useState } from 'react';
-import { CategoriesStackNavigation } from './Categories/CategoriesStackNavigation';
 
 export const RootStackNavigation = (props: any) => {
     const { status } = useContext(AuthContext);

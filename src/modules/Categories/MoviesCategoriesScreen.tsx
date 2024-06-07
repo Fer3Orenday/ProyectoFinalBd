@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity, Button } from 'react-native';
-import { theme } from '../../theme/theme';
+import { SafeAreaView, View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity, Button, TextInput, Alert } from 'react-native';
+import { colors, theme } from '../../theme/theme';
 import { StackScreenProps } from '@react-navigation/stack';
 import { CategoriesRootParamas } from '../../navigation/Categories/categoriesRootParams';
+import { Background } from '../../component/Background';
 
 interface Item {
     id: string;
@@ -40,8 +41,10 @@ const movies: Item[] = [
 
 interface Props extends StackScreenProps<CategoriesRootParamas, any> { };
 
-export const MovieScreen = ({ navigation, route }: Props) => {
+export const MovieScreen = ({ navigation }: Props) => {
     const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [filteredMovies, setFilteredMovies] = useState<Item[]>(movies);
 
     const handleSelectItem = (item: Item) => {
         if (selectedItemIds.includes(item.id)) {
@@ -53,7 +56,13 @@ export const MovieScreen = ({ navigation, route }: Props) => {
 
     const handleOnNavigate = () => {
         navigation.navigate('MusicScreen', {});
-    }
+    };
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        const results = movies.filter(movie => movie.title.toLowerCase().includes(query.toLowerCase()));
+        setFilteredMovies(results);
+    };
 
     const renderItem = ({ item }: { item: Item }) => {
         const isSelected = selectedItemIds.includes(item.id);
@@ -70,15 +79,22 @@ export const MovieScreen = ({ navigation, route }: Props) => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Background />
             <Text style={{ color: theme.colors.primary, fontSize: 20, fontWeight: '700', textAlign: 'center' }}>Selecciona tus peliculas favoritas</Text>
+            <TextInput
+                style={styles.searchInput}
+                placeholder="Buscar película"
+                value={searchQuery}
+                onChangeText={handleSearch}
+            />
             <FlatList
-                data={movies}
+                data={filteredMovies}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
                 horizontal
                 contentContainerStyle={styles.list}
             />
-            <Button title='Siguiente categoria' onPress={handleOnNavigate} />
+            <Button title='Siguiente categoria' color={colors.secondaryPurple} onPress={handleOnNavigate} />
         </SafeAreaView>
     );
 };
@@ -123,5 +139,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         margin: 10
+    },
+    searchInput: {
+        height: 40,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 5,
+        marginVertical: 10,
+        marginHorizontal: 20,
+        paddingLeft: 10
     }
 });

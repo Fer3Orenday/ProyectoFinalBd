@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity, Button } from 'react-native';
-import { theme } from '../../theme/theme';
+import { SafeAreaView, View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity, Button, TextInput } from 'react-native';
+import { colors, theme } from '../../theme/theme';
 import { StackScreenProps } from '@react-navigation/stack';
 import { CategoriesRootParamas } from '../../navigation/Categories/categoriesRootParams';
+import { Background } from '../../component/Background';
 
 interface Item {
     id: string;
@@ -40,8 +41,10 @@ const music: Item[] = [
 
 interface Props extends StackScreenProps<CategoriesRootParamas, any> { };
 
-export const MusicScreen = ({ navigation, route }: Props) => {
+export const MusicScreen = ({ navigation }: Props) => {
     const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [filteredMusic, setFilteredMusic] = useState<Item[]>(music);
 
     const handleSelectItem = (item: Item) => {
         if (selectedItemIds.includes(item.id)) {
@@ -52,8 +55,14 @@ export const MusicScreen = ({ navigation, route }: Props) => {
     };
 
     const handleOnNavigate = () => {
-        navigation.navigate('Seriescreen', {});
+        navigation.navigate('SeriesScreen', {});
     }
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        const results = music.filter(song => song.title.toLowerCase().includes(query.toLowerCase()));
+        setFilteredMusic(results);
+    };
 
     const renderItem = ({ item }: { item: Item }) => {
         const isSelected = selectedItemIds.includes(item.id);
@@ -70,15 +79,22 @@ export const MusicScreen = ({ navigation, route }: Props) => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Background />
             <Text style={{ color: theme.colors.primary, fontSize: 20, fontWeight: '700', textAlign: 'center' }}>Selecciona tus canciones favoritas</Text>
+            <TextInput
+                style={styles.searchInput}
+                placeholder="Buscar canción"
+                value={searchQuery}
+                onChangeText={handleSearch}
+            />
             <FlatList
-                data={music}
+                data={filteredMusic}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
                 horizontal
                 contentContainerStyle={styles.list}
             />
-            <Button title='Siguiente categoria' onPress={handleOnNavigate} />
+            <Button title='Siguiente categoria' color={colors.secondaryPurple} onPress={handleOnNavigate} />
         </SafeAreaView>
     );
 };
@@ -118,5 +134,19 @@ const styles = StyleSheet.create({
     category: {
         fontSize: 14,
         color: '#666'
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        margin: 10
+    },
+    searchInput: {
+        height: 40,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 5,
+        marginVertical: 10,
+        marginHorizontal: 20,
+        paddingLeft: 10
     }
 });
