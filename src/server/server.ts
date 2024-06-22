@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = ''; 
+const baseURL = 'http://192.168.4.232:3000/'; 
 
 const soundApi = axios.create({
     baseURL,

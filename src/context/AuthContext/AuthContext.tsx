@@ -1,7 +1,7 @@
 import { AuthReducer, AuthState } from "./AuthReducer";
 import { createContext, useEffect, useReducer, useState } from "react";
 import { LOGIN_EMAIL } from "../../server/sources";
-import onDigitalApi from "../../server/server";
+import soundApi from "../../server/server";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type AuthContextProps = {
@@ -9,7 +9,13 @@ type AuthContextProps = {
     handledOnSetTypeModal: (type: string) => void;
     showModal: () => void;
     status: 'checking' | 'autheticated' | 'not-autheticated';
-    user: { email: string; familyName: string; givenName: string; name: string; };
+    user: {
+        IdUsuario: number;
+        Nombre: string;
+        Edad: string;
+        Correo: string;
+        Sexo: string;
+    };
     img: string | null;
     isModalVisible: boolean;
     typeModal: string;
@@ -30,36 +36,28 @@ export const AuthProvider = ({ children }: any) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [typeModal, setTypeModal] = useState('');
 
-    const loginEmail = async (username: string, password: string) => {
-        // try {
-        //     const result = await onDigitalApi.post(LOGIN_EMAIL, {
-        //         username,
-        //         password
-        //     });
-        //     if (result.status === 200) {
-        //         await AsyncStorage.setItem('token', result.data.objeto);
-        dispatch({
-            type: 'singUp',
-            payload: {
-                user: {
-                    email: username,
-                    familyName: username,
-                    givenName: username,
-                    name: username,
-                },
-                token: '',
-                img: ''
-            }
-        });
-        return true;
-        // } else {
-        //     return false;
-        // }
-        // } catch (error: any) {
-        //     console.log('Error Login', error);
-        //     handledOnSetTypeModal('errorLogin');
-        return false;
-        // }
+    const loginEmail = async (correo: string, password: string) => {
+        try {
+            // const result = await soundApi.get(`${LOGIN_EMAIL}${correo}/${password}`);
+            // if (result.status === 200) {
+            //     console.log(result.data);
+            dispatch({
+                type: 'singUp',
+                payload: {
+                    user: { token: 'fvdfvdfvdsfv', user: 'Leonardo', img: '' },
+                    token: '',
+                    img: ''
+                }
+            });
+            return true;
+            // } else {
+            //     return false;
+            // }
+        } catch (error: any) {
+            console.log('Error Login', error);
+            handledOnSetTypeModal('errorLogin');
+            return false;
+        }
     }
 
     const handledOnSetTypeModal = (type: string) => {

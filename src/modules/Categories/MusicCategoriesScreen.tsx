@@ -1,77 +1,142 @@
-import React, { useState } from 'react';
-import { SafeAreaView, View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity, Button, TextInput } from 'react-native';
-import { colors, theme } from '../../theme/theme';
-import { StackScreenProps } from '@react-navigation/stack';
-import { CategoriesRootParamas } from '../../navigation/Categories/categoriesRootParams';
+import React, { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../../context/AuthContext/AuthContext';
 import { Background } from '../../component/Background';
+import { CategoriesRootParamas } from '../../navigation/Categories/categoriesRootParams';
+import { colors, theme } from '../../theme/theme';
+import { GET_MUSICA, POST_PREFERENCIAS } from '../../server/sources';
+import { SafeAreaView, View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity, Button, TextInput } from 'react-native';
+import { StackScreenProps } from '@react-navigation/stack';
+import soundApi from '../../server/server';
 
-interface Item {
-    id: string;
-    title: string;
-    category: string;
-    image: string;
+export interface MusicData {
+    Artista: string;
+    CancionesFavoritas: string;
+    Genero: string;
+    IdMusica: number;
+    IdUsuario: null;
+    Recomendaciones: string;
+    Álbum: string;
+    Imagen: string;
 }
 
-const music: Item[] = [
+const musicDataArray: MusicData[] = [
     {
-        id: '1',
-        title: 'Bohemian Rhapsody',
-        category: 'Rock',
-        image: 'https://link-to-bohemian-rhapsody-cover.com/cover.jpg'
+        Artista: "The Beatles",
+        CancionesFavoritas: "Hey Jude, Let It Be, Yesterday",
+        Genero: "Rock",
+        IdMusica: 1,
+        IdUsuario: null,
+        Recomendaciones: "Come Together, Something",
+        Álbum: "Abbey Road",
+        Imagen: "https://m.media-amazon.com/images/I/71lQ7EgB6vL._AC_SL1425_.jpg"
     },
     {
-        id: '2',
-        title: 'Imagine',
-        category: 'Pop',
-        image: 'https://link-to-imagine-cover.com/cover.jpg'
+        Artista: "Michael Jackson",
+        CancionesFavoritas: "Billie Jean, Thriller, Beat It",
+        Genero: "Pop",
+        IdMusica: 2,
+        IdUsuario: null,
+        Recomendaciones: "Smooth Criminal, Black or White",
+        Álbum: "Thriller",
+        Imagen: "https://m.media-amazon.com/images/I/71UimO6-MjL._AC_SL1425_.jpg"
     },
     {
-        id: '3',
-        title: 'Smells Like Teen Spirit',
-        category: 'Grunge',
-        image: 'https://link-to-smells-like-teen-spirit-cover.com/cover.jpg'
+        Artista: "Beyoncé",
+        CancionesFavoritas: "Halo, Single Ladies, Crazy in Love",
+        Genero: "Pop, R&B",
+        IdMusica: 3,
+        IdUsuario: null,
+        Recomendaciones: "Formation, Drunk in Love",
+        Álbum: "Lemonade",
+        Imagen: "https://m.media-amazon.com/images/I/71u6gdz-yDL._AC_SL1200_.jpg"
     },
     {
-        id: '4',
-        title: 'Stairway to Heaven',
-        category: 'Rock',
-        image: 'https://link-to-stairway-to-heaven-cover.com/cover.jpg'
+        Artista: "Queen",
+        CancionesFavoritas: "Bohemian Rhapsody, Don't Stop Me Now, We Will Rock You",
+        Genero: "Rock",
+        IdMusica: 4,
+        IdUsuario: null,
+        Recomendaciones: "Somebody to Love, Under Pressure",
+        Álbum: "A Night at the Opera",
+        Imagen: "https://m.media-amazon.com/images/I/71lnUtYFo-L._AC_SL1300_.jpg"
+    },
+    {
+        Artista: "Taylor Swift",
+        CancionesFavoritas: "Love Story, Shake It Off, Blank Space",
+        Genero: "Pop, Country",
+        IdMusica: 5,
+        IdUsuario: null,
+        Recomendaciones: "You Belong with Me, Bad Blood",
+        Álbum: "1989",
+        Imagen: "https://m.media-amazon.com/images/I/71Y5kHI9dzL._AC_SL1200_.jpg"
     }
 ];
 
 interface Props extends StackScreenProps<CategoriesRootParamas, any> { };
 
 export const MusicScreen = ({ navigation }: Props) => {
+    const { user } = useContext(AuthContext);
+
     const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [filteredMusic, setFilteredMusic] = useState<Item[]>(music);
+    const [music, setMusic] = useState<MusicData[]>(musicDataArray);
+    const [filteredMusic, setFilteredMusic] = useState<MusicData[]>(musicDataArray);
+    const [selectedItems, setSelectedItems] = useState<any[]>([]);
 
-    const handleSelectItem = (item: Item) => {
-        if (selectedItemIds.includes(item.id)) {
-            setSelectedItemIds(selectedItemIds.filter(id => id !== item.id));
+    useEffect(() => {
+        // handleOnGetMusic();
+    }, []);
+
+    const handleOnGetMusic = async () => {
+        const result = await soundApi.get(GET_MUSICA);
+        if (result.status === 200) {
+            setMusic(result.data);
+            setFilteredMusic(result.data);
+        }
+    }
+
+    const handleSelectItem = (item: MusicData) => {
+        if (selectedItemIds.includes(item.Artista)) {
+            setSelectedItemIds(selectedItemIds.filter(id => id !== item.Artista));
+            setSelectedItems(selectedItems.filter(selectedItem => selectedItem.IdContenido !== item.IdMusica));
         } else {
-            setSelectedItemIds([...selectedItemIds, item.id]);
+            setSelectedItemIds([...selectedItemIds, item.Artista]);
+            setSelectedItems([
+                ...selectedItems,
+                {
+                    IdUsuario: user.IdUsuario,
+                    TipoContenido: 'musica',
+                    IdContenido: item.IdMusica,
+                }
+            ]);
         }
     };
 
-    const handleOnNavigate = () => {
+    const handleOnNavigate = async () => {
+        // const result = await soundApi.post(POST_PREFERENCIAS, {
+        //     preferencias: selectedItems
+        // });
+        // if (result.status === 201) {
         navigation.navigate('SeriesScreen', {});
+        // }
     }
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);
-        const results = music.filter(song => song.title.toLowerCase().includes(query.toLowerCase()));
+        const results = music.filter(song => song.Artista.toLowerCase().includes(query.toLowerCase()));
         setFilteredMusic(results);
     };
 
-    const renderItem = ({ item }: { item: Item }) => {
-        const isSelected = selectedItemIds.includes(item.id);
+    const renderItem = ({ item }: { item: MusicData }) => {
+        const isSelected = selectedItemIds.includes(item.Artista);
         return (
             <TouchableOpacity onPress={() => handleSelectItem(item)} style={[styles.card, isSelected && styles.selectedCard]}>
-                <Image source={{ uri: item.image }} style={styles.image} />
+                <Image source={{ uri: 'https://cdn.pixabay.com/photo/2016/10/22/00/15/spotify-1759471_1280.jpg' }} style={styles.image} />
                 <View style={styles.info}>
-                    <Text style={styles.title}>{item.title}</Text>
-                    <Text style={styles.category}>{item.category}</Text>
+                    <Text style={styles.title}>Artista: {item.Artista}</Text>
+                    <Text style={styles.category}>Album: {item.Álbum}</Text>
+                    <Text style={styles.category}>Genero: {item.Genero}</Text>
+                    <Text style={styles.category}>Recomendaciones: {item.Recomendaciones}</Text>
                 </View>
             </TouchableOpacity>
         );
@@ -90,7 +155,6 @@ export const MusicScreen = ({ navigation }: Props) => {
             <FlatList
                 data={filteredMusic}
                 renderItem={renderItem}
-                keyExtractor={item => item.id}
                 horizontal
                 contentContainerStyle={styles.list}
             />
@@ -133,7 +197,8 @@ const styles = StyleSheet.create({
     },
     category: {
         fontSize: 14,
-        color: '#666'
+        color: '#666',
+        marginTop: 5,
     },
     buttonContainer: {
         flexDirection: 'row',

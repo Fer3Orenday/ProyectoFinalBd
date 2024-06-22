@@ -52,6 +52,7 @@ export const LoginScreen = () => {
                         placeholderTextColor={colors.black}
                         style={globalStyles.globalInput}
                         value={email}
+                        autoCapitalize='none'
                     />
                     <TextInput
                         onChangeText={setPassword}
